@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Billing - Klinik JHDC</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+     <div class="container">
+        <div class="card header">
+            <div class="logo-container">
+                <img src="JHDC_Logo.jpg" alt="JHDC Logo" class="logo">
+            </div>
+            <h1><i class="fas fa-tooth"></i> Sistem Billing</h1>
+            <p class="subtitle">Jakarta Holistic Dental Care</p>
+            <p class="tagline">Professional Dental Care Solutions</p>
+        </div>
+
+        <div class="card form-section">
+            <h2><i class="fas fa-user-plus"></i> Data Pasien & Tindakan</h2>
+            
+            <div class="alert" id="alert"></div>
+            
+            <form id="patientForm">
+                <div class="form-group">
+                    <label for="queueNumber">Nomor Antrian:</label>
+                    <input type="text" id="queueNumber" class="form-input" placeholder="Masukkan nomor antrian" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="patientName">Nama Pasien:</label>
+                    <input type="text" id="patientName" class="form-input" placeholder="Masukkan nama lengkap pasien" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="patientAge">Umur:</label>
+                    <input type="number" id="patientAge" class="form-input" placeholder="Umur pasien" min="1" max="150" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="patientPhone">Nomor Telepon:</label>
+                    <input type="tel" id="patientPhone" class="form-input" placeholder="08xx-xxxx-xxxx">
+                </div>
+                
+                <div class="form-group">
+                    <label for="patientEmail">Email:</label>
+                    <input type="email" id="patientEmail" class="form-input" placeholder="contoh@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="treatmentSelect">Pilih Tindakan:</label>
+                    <select id="treatmentSelect" class="form-select" required>
+                        <option value="">-- Pilih Tindakan --</option>
+                        <option value="tambal_kecil">Tambal Gigi Kecil - Rp 500,000</option>
+                        <option value="tambal_sedang">Tambal Gigi Sedang - Rp 800,000</option>
+                        <option value="tambal_besar">Tambal Gigi Besar - Rp 1,200,000</option>
+                        <option value="scaling">Scaling Gigi - Rp 300,000</option>
+                        <option value="cabut_gigi">Cabut Gigi - Rp 250,000</option>
+                        <option value="root_canal">Root Canal Treatment - Rp 1,500,000</option>
+                        <option value="crown">Pemasangan Crown - Rp 2,000,000</option>
+                        <option value="konsultasi">Konsultasi Dokter - Rp 150,000</option>
+                        <option value="rontgen">Rontgen Gigi - Rp 200,000</option>
+                        <option value="bleaching">Bleaching Gigi - Rp 1,000,000</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="diagnosis">Diagnosis & Keterangan:</label>
+                    <textarea id="diagnosis" class="form-input" rows="4" placeholder="Masukkan diagnosis dan keterangan pemeriksaan..." required></textarea>
+                </div>
+                
+                <button type="submit" class="btn" id="addTreatmentBtn">
+                    <i class="fas fa-plus"></i> Tambah Tindakan ke Bill
+                </button>
+                
+                <button type="button" class="btn" onclick="resetForm()" id="resetBtn" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); margin-top: 10px; display: none;">
+                    <i class="fas fa-refresh"></i> Reset Form - Pasien Baru
+                </button>
+            </form>
+        </div>
+
+        <div class="card bill-section">
+            <h2><i class="fas fa-file-invoice-dollar"></i> Bill Pembayaran</h2>
+            
+            <div class="patient-info" id="patientInfo" style="display: none;">
+                <h3><i class="fas fa-user"></i> Informasi Pasien</h3>
+                <div class="info-row">
+                    <span>No. Antrian:</span>
+                    <span id="displayQueue" style="font-weight: bold; font-size: 1.1em; color: #fff;">-</span>
+                </div>
+                <div class="info-row">
+                    <span>Nama:</span>
+                    <span id="displayName">-</span>
+                </div>
+                <div class="info-row">
+                    <span>Umur:</span>
+                    <span id="displayAge">-</span>
+                </div>
+                <div class="info-row">
+                    <span>Telepon:</span>
+                    <span id="displayPhone">-</span>
+                </div>
+                <div class="info-row">
+                    <span>Email:</span>
+                    <span id="displayEmail">-</span>
+                </div>
+                <div class="info-row">
+                    <span>Tanggal:</span>
+                    <span id="displayDate">-</span>
+                </div>
+            </div>
+
+            <div class="treatment-list">
+                <h3><i class="fas fa-list"></i> Daftar Tindakan</h3>
+                <div id="treatmentItems">
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list fa-3x"></i>
+                        <p>Belum ada tindakan yang ditambahkan</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="total">
+                <h3><i class="fas fa-calculator"></i> Total Pembayaran</h3>
+                <div class="total-amount" id="totalAmount">Rp 0</div>
+            </div>
+
+            <div class="diagnosis-section" id="diagnosisSection" style="display: none;">
+                <h4><i class="fas fa-stethoscope"></i> Diagnosis & Keterangan Pemeriksaan</h4>
+                <div class="diagnosis-text" id="diagnosisText">-</div>
+            </div>
+
+            <button class="print-btn" onclick="window.print()">
+                <i class="fas fa-print"></i> Cetak Bill
+            </button>
+            
+            <button class="print-btn" onclick="clearBill()" style="background: rgba(231, 76, 60, 0.3); border-color: rgba(231, 76, 60, 0.5); margin-top: 10px;">
+                <i class="fas fa-trash"></i> Hapus Seluruh Bill
+            </button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
